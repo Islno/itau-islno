@@ -14,4 +14,7 @@ public class TransacaoService {
     public void registrarTransacao(Transacao transacao) {
         transacaoStorage.add(transacao);
     }
+    public void deletarTransacoes(){
+        transacaoStorage.deleteALL();
+    }
 }
