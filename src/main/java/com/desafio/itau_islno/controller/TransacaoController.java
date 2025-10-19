@@ -1,15 +1,15 @@
 package com.desafio.itau_islno.controller;
 
+import com.desafio.itau_islno.model.Estatistica;
 import com.desafio.itau_islno.model.Transacao;
 import com.desafio.itau_islno.service.TransacaoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class TransacaoController {
@@ -28,5 +28,12 @@ public class TransacaoController {
         transacaoService.deletarTransacoes();
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/estatistica")
+    public ResponseEntity<Estatistica> estatisticas() {
+        Estatistica estatisticas = transacaoService.calcularEstatisticas();
+
+        return ResponseEntity.ok(estatisticas);
     }
 }

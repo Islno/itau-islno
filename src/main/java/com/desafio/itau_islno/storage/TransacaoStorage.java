@@ -12,7 +12,9 @@ public class TransacaoStorage {
     private final List<Transacao> transacoes = new CopyOnWriteArrayList<>();
 
     public void add(Transacao transacao){
+        System.out.println("adicionando transação...");
         this.transacoes.add(transacao);
+        System.out.println("Transação adicionada! Total de transações: " + this.transacoes.size());
     }
     public void deleteALL(){
         System.out.println("Limpando a lista... Total de transações antes: " + this.transacoes.size());
@@ -20,5 +22,8 @@ public class TransacaoStorage {
         this.transacoes.clear();
 
         System.out.println("Lista limpa! Total de transações agora: " + this.transacoes.size());
+    }
+    public List<Transacao> getTransacoes(){
+        return new CopyOnWriteArrayList<>(transacoes); //Retorna uma cópia para evitar modificações externas
     }
 }
