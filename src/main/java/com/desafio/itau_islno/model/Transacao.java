@@ -17,6 +17,11 @@ public class Transacao {
     @PastOrPresent
     private OffsetDateTime dataHora;
 
+    public Transacao(BigDecimal valor, OffsetDateTime dataHora) {
+        this.valor = valor;
+        this.dataHora = dataHora;
+    }
+
     public BigDecimal getValor() {
         return valor;
     }

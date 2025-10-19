@@ -16,7 +16,7 @@ public class TransacaoStorage {
         this.transacoes.add(transacao);
         System.out.println("Transação adicionada! Total de transações: " + this.transacoes.size());
     }
-    public void deleteALL(){
+    public void deleteAll(){
         System.out.println("Limpando a lista... Total de transações antes: " + this.transacoes.size());
 
         this.transacoes.clear();

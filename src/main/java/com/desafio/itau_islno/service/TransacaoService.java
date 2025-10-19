@@ -3,17 +3,17 @@ package com.desafio.itau_islno.service;
 import com.desafio.itau_islno.model.Estatistica;
 import com.desafio.itau_islno.model.Transacao;
 import com.desafio.itau_islno.storage.TransacaoStorage;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
-import java.util.DoubleSummaryStatistics;
+import java.util.List;
 
 @Service
 public class TransacaoService {
+
     @Autowired
     private TransacaoStorage transacaoStorage;
 
@@ -22,25 +22,39 @@ public class TransacaoService {
     }
 
     public void deletarTransacoes() {
-        transacaoStorage.deleteALL();
+        transacaoStorage.deleteAll();
     }
 
     public Estatistica calcularEstatisticas() {
         OffsetDateTime agora = OffsetDateTime.now();
         OffsetDateTime limiteInferior = agora.minusSeconds(60);
 
-        DoubleSummaryStatistics stats = transacaoStorage.getTransacoes().stream().filter(t -> t.getDataHora().isAfter(limiteInferior)).mapToDouble(t -> t.getValor().doubleValue()).summaryStatistics();
+        List<Transacao> transacoesRecentes = transacaoStorage.getTransacoes().stream()
+                .filter(t -> t.getDataHora().isAfter(limiteInferior))
+                .toList();
 
-        if (stats.getCount() == 0){
+        if (transacoesRecentes.isEmpty()) {
             return new Estatistica();
         }
-        return new Estatistica(
-                stats.getCount(),
-                BigDecimal.valueOf(stats.getSum()).setScale(2, RoundingMode.HALF_UP),
 
-                BigDecimal.valueOf(stats.getAverage()).setScale(2, RoundingMode.HALF_UP),
-                BigDecimal.valueOf(stats.getMin()).setScale(2, RoundingMode.HALF_UP),
-                BigDecimal.valueOf(stats.getMax()).setScale(2, RoundingMode.HALF_UP)
-        );
+        BigDecimal sum = transacoesRecentes.stream()
+                .map(Transacao::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal avg = sum.divide(new BigDecimal(transacoesRecentes.size()), 2, RoundingMode.HALF_UP);
+
+        BigDecimal min = transacoesRecentes.stream()
+                .map(Transacao::getValor)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal max = transacoesRecentes.stream()
+                .map(Transacao::getValor)
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        long count = transacoesRecentes.size();
+
+        return new Estatistica(count, sum, avg, min, max);
     }
 }
